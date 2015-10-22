@@ -1,3 +1,4 @@
+ruby '2.1.3'
 source "https://rubygems.org"
 
 gem 'sinatra', '1.4.5'
@@ -8,3 +9,4 @@ gem 'dm-postgres-adapter'
 gem 'rack-cors'
 gem 'rest-client'
 gem 'nokogiri'
+gem 'thin'
