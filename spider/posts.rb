@@ -142,7 +142,7 @@ class ArticlePersistent
     end#each
   end
 
-  def just_do_it(page=1)
+  def partial_update(page=1)
     if anything_new?
       fetch_one_page_posts
     end #if

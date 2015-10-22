@@ -17,8 +17,8 @@ end
 
 configure :development do
   DataMapper::Logger.new($stdout, :debug)
-  #DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/development.db")
-  DataMapper.setup(:default, "postgres://eason@localhost/songshu")
+  DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/development.db")
+  #DataMapper.setup(:default, "postgres://eason@localhost/songshu")
 end
 
 configure :production do

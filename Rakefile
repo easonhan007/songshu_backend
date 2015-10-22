@@ -17,9 +17,16 @@ task :upgrate do
   DataMapper.auto_migrate!
 end
 
-desc 'get post list' 
+desc 'get all posts' 
 task :get_posts do
   require './main'
   require './spider/posts'
   ArticlePersistent.new.fetch_all_posts
+end
+
+desc 'partial update' 
+task :partial_update do
+  require './main'
+  require './spider/posts'
+  ArticlePersistent.new.partial_update
 end
