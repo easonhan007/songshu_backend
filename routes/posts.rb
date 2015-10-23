@@ -9,6 +9,25 @@ get '/api/posts' do
   posts.to_json(only: Post.basic_info_return_fields)
 end
 
+get '/api/translated_posts' do
+  content_type :json
+  page = params[:page].to_i
+  page = 1 if page == 0
+  order = params[:order] || 'desc'
+  posts = Post.translated_posts_by_page(page, order)
+
+  etag Digest::MD5.hexdigest(page.to_s)
+  posts.to_json(only: Post.basic_info_return_fields)
+end
+
+get '/api/posts/count' do
+  content_type :json
+  type = params[:type] || ''
+  length = Post.length_of(type)
+  
+  {count: length}.to_json  
+end
+
 get '/api/posts/:id' do
   content_type :json
   t = Post.post_by_id(params[:id])
@@ -18,29 +37,6 @@ get '/api/posts/:id' do
   t.to_json(only: Post.article_return_fields)
 end
 
-# post '/api/posts' do
-#   body = JSON.parse request.body.read
-#   t = Post.create(title: body['title'], 
-#                  description: body['description'],
-#                  completed: false)
-#   status 201
-#   t.to_json
-# end
 
-# put '/api/posts/:id' do
-#   body = JSON.parse request.body.read
-#   t = Post.get(params[:id])
-#   halt 404 if t.nil?
-#   halt 500 unless Post.update(
-#     title: body['title'], 
-#     description: body['description'])
+  
 
-#   t.to_json
-# end
-
-# delete '/api/posts/:id' do
-#   t = Post.get params[:id]
-#   halt 404 if t.nil?
-#   halt 500 unless t.destroy
-#   t.to_json
-# end

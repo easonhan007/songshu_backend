@@ -3,7 +3,6 @@ require 'rest-client'
 require 'nokogiri'
 require 'ostruct'
 require 'pp'
-#require './models/post'
 
 class PostBasicInfoPaser
   attr_accessor :url
@@ -78,8 +77,13 @@ class PostBasicInfoPaser
     end #each
     return content
   end
+end
 
-
+class TranslatedPostInfoPaser < PostBasicInfoPaser
+  def initialize()
+    @url = URI.escape('http://songshuhui.net/archives/tag/译文')
+    @page = Nokogiri::HTML(RestClient.get(@url))
+  end
 end
 
 class ArticleParser
@@ -123,8 +127,6 @@ class ArticlePersistent
       content = @p.content_by_page(page)
       content.each do |c|
         if c.post_id
-          # pp c.to_h
-          # Post.raise_on_save_failure = true
           res = Post.first_or_create({post_id: c.post_id}, c.to_h)
           puts "save #{c.title} #{res.saved?}"
         end #if
@@ -138,6 +140,54 @@ class ArticlePersistent
       if c.post_id
         res = Post.first_or_create({post_id: c.post_id}, c.to_h)
         puts "save #{c.title} #{res.saved?}"
+      end #if
+    end#each
+  end
+
+  def partial_update(page=1)
+    if anything_new?
+      fetch_one_page_posts
+    end #if
+  end
+
+end
+
+class TranslatedArticlePersistent
+  def initialize
+    @p = TranslatedPostInfoPaser.new()
+  end
+
+  def anything_new?
+    if Post.lasted_post_id
+      puts "DB id #{Post.lasted_post_id}, SITE id #{@p.current_post_id}"
+      @p.current_post_id > Post.lasted_translated_post_id
+    else
+      true
+    end
+  end
+
+  def fetch_all_posts
+    all_pages = @p.total_page()
+    all_pages.times do |page|
+      page = page + 1
+      content = @p.content_by_page(page)
+      content.each do |c|
+        if c.post_id
+          c.type = 'translated'
+          res = Post.first_or_create({post_id: c.post_id}, c.to_h)
+          puts "save TRANSLATED #{c.title} #{res.saved?}"
+        end #if
+      end #each
+    end #times
+  end
+
+  def fetch_one_page_posts
+    content = @p.content_by_page()
+    content.each do |c|
+      if c.post_id
+        c.type = 'translated'
+        res = Post.first_or_create({post_id: c.post_id}, c.to_h)
+        puts "save TRANSLATED #{c.title} #{res.saved?}"
       end #if
     end#each
   end
