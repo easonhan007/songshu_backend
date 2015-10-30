@@ -27,7 +27,7 @@ class Post
   end
 
   def self.lasted_post_id
-    Post.all(limit: 1, order: [:post_id.desc]).first.post_id rescue 0
+    Post.all(conditions: ['type is NULL'], limit: 1, order: [:post_id.desc]).first.post_id rescue 0
   end
 
   def self.lasted_translated_post_id
